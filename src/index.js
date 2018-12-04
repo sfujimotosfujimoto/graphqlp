@@ -1,0 +1,115 @@
+import { GraphQLServer } from 'graphql-yoga';
+
+// String, Boolean, Int, Float, ID
+
+// Demo User data
+const users = [
+	{
+		id: '1',
+		name: 'SF',
+		email: 'sf@example.com',
+		age: 45
+	},
+	{
+		id: '2',
+		name: 'Sarah',
+		email: 'sarah@example.com'
+	},
+	{
+		id: '3',
+		name: 'Mike',
+		email: 'mike@example.com'
+	}
+];
+
+const posts = [
+	{
+		id: '1',
+		title: 'First Post',
+		body: 'Body First',
+		published: true
+	},
+	{
+		id: '2',
+		title: 'Second Post',
+		body: 'Body Second',
+		published: true
+	},
+	{
+		id: '3',
+		title: 'Third Post',
+		body: 'Body Third',
+		published: false
+	}
+];
+
+// Type definitions
+const typeDefs = `
+    type Query {
+        users(query: String): [User!]!
+        posts(query: String): [Post!]!
+        me: User!
+        post: Post!
+    }
+    
+    type User {
+        id: ID!
+        name: String!
+        email: String!
+        age: Int
+    }
+    
+    type Post {
+        id: ID!
+        title: String!
+        body: String!
+        published: Boolean!
+    }
+`;
+
+// Resolvers
+const resolvers = {
+	Query: {
+		users(parent, args, ctx, info) {
+			if (!args.query) {
+				return users;
+			}
+
+			return users.filter((user) => {
+				return user.name.toLowerCase().includes(args.query.toLowerCase());
+			});
+		},
+		posts(parent, args, ctx, info) {
+			if (!args.query) {
+				return posts;
+			}
+			return posts.filter((post) => {
+				return post.title.includes(args.query);
+			});
+		},
+		me() {
+			return {
+				id: '123098',
+				name: 'John',
+				email: 'john@example.com'
+			};
+		},
+		post() {
+			return {
+				id: '1234asdf',
+				title: 'My First Post',
+				body: 'Hello this is from the post!',
+				published: true
+			};
+		}
+	}
+};
+
+const server = new GraphQLServer({
+	typeDefs,
+	resolvers
+});
+
+server.start(() => {
+	console.log('The server is up!');
+});
