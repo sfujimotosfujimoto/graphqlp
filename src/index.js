@@ -27,19 +27,22 @@ const posts = [
 		id: '1',
 		title: 'First Post',
 		body: 'Body First',
-		published: true
+		published: true,
+		author: '1'
 	},
 	{
 		id: '2',
 		title: 'Second Post',
 		body: 'Body Second',
-		published: true
+		published: true,
+		author: '1'
 	},
 	{
 		id: '3',
 		title: 'Third Post',
 		body: 'Body Third',
-		published: false
+		published: false,
+		author: '2'
 	}
 ];
 
@@ -63,7 +66,8 @@ const typeDefs = `
         id: ID!
         title: String!
         body: String!
-        published: Boolean!
+		published: Boolean!
+		author: User!
     }
 `;
 
@@ -101,6 +105,13 @@ const resolvers = {
 				body: 'Hello this is from the post!',
 				published: true
 			};
+		}
+	},
+	Post: {
+		author(parent, args, ctx, info) {
+			return users.find((user) => {
+				return user.id === parent.author;
+			});
 		}
 	}
 };
